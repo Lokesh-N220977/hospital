@@ -1,12 +1,10 @@
-import os
 from datetime import datetime, timedelta
+from typing import Optional, Any
 from jose import jwt
-from dotenv import load_dotenv
+from config.settings import settings
 
-load_dotenv()
-
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
+SECRET_KEY = settings.JWT_SECRET
+ALGORITHM = settings.JWT_ALGORITHM
 
 
 def create_access_token(data: dict, expires_delta: int = 60):
@@ -18,3 +16,11 @@ def create_access_token(data: dict, expires_delta: int = 60):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
     return encoded_jwt
+
+
+def decode_access_token(token: str) -> Optional[dict]:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except Exception:
+        return None

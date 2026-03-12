@@ -1,34 +1,6 @@
-from pydantic import BaseModel, field_validator
 from typing import Optional, Dict, Any, List
 from bson import ObjectId
 from app.database import database
-from datetime import datetime
-
-
-# --- Pydantic Schemas ---
-
-class VisitHistoryCreate(BaseModel):
-    """Payload for POST /visit-history/add (sent by doctor after a visit)."""
-    appointment_id: str
-    doctor_id: str
-    patient_id: str
-    diagnosis: str
-    prescription: Optional[str] = None
-    notes: Optional[str] = None
-
-
-class VisitHistoryResponse(BaseModel):
-    """Typed response for a single visit record."""
-    id: str
-    appointment_id: str
-    doctor_id: str
-    patient_id: str
-    diagnosis: str
-    prescription: Optional[str] = None
-    notes: Optional[str] = None
-    doctor_name: Optional[str] = None
-    visit_date: Optional[str] = None     # stored as YYYY-MM-DD
-    created_at: Optional[str] = None
 
 
 # --- MongoDB Model ---

@@ -1,8 +1,8 @@
 from typing import Optional, Dict, Any, List, Tuple
-from app.models.appointment_model import AppointmentModel
-from app.models.doctor_model import DoctorModel
-from app.models.user_model import UserModel
-from app.utils.hash import hash_password
+from app.models import AppointmentModel
+from app.models import DoctorModel
+from app.models import UserModel
+from app.utils import hash_password
 
 class AdminService:
     
@@ -62,26 +62,6 @@ class AdminService:
 
     @staticmethod
     def get_dashboard_stats() -> Dict[str, Any]:
-        """Fetch statistics for the admin dashboard."""
-        from datetime import datetime
-        from app.database import database
-
-        today_str = datetime.now().strftime("%Y-%m-%d")
-
-        # Total counts
-        total_doctors = database.doctors.count_documents({})
-        total_patients = database.users.count_documents({"role": "patient"})
-        total_appointments = database.appointments.count_documents({})
-
-        # Today's non-cancelled appointments
-        today_appointments = database.appointments.count_documents({
-            "appointment_date": today_str,
-            "status": {"$ne": "cancelled"}
-        })
-
-        return {
-            "total_doctors": total_doctors,
-            "total_patients": total_patients,
-            "total_appointments": total_appointments,
-            "today_appointments": today_appointments
-        }
+        """Fetch statistics for the admin dashboard via AnalyticsService."""
+        from app.services import AnalyticsService
+        return AnalyticsService.get_dashboard_stats()

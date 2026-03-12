@@ -1,8 +1,8 @@
 from typing import Optional, Dict, Any, List, Tuple
 from datetime import datetime
-from app.models.visit_history_model import VisitHistoryModel
-from app.models.appointment_model import AppointmentModel
-from app.models.doctor_model import DoctorModel
+from app.models import VisitHistoryModel
+from app.models import AppointmentModel
+from app.models import DoctorModel
 
 
 class VisitHistoryService:

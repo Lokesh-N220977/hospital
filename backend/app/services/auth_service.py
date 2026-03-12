@@ -1,7 +1,7 @@
 from typing import Optional, Dict, Any, Tuple
-from app.models.user_model import UserModel
-from app.utils.hash import hash_password, verify_password
-from app.utils.jwt_handler import create_access_token
+from app.models import UserModel
+from app.utils import hash_password, verify_password
+from app.utils import create_access_token
 
 class AuthService:
     

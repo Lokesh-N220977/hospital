@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Any, List, Tuple
-from app.models.appointment_model import AppointmentModel
-from app.models.doctor_model import DoctorModel
+from app.models import AppointmentModel
+from app.models import DoctorModel
 
 
 class AppointmentService:
@@ -45,7 +45,7 @@ class AppointmentService:
             return None, "Slot already booked. Please choose another time."
 
         # 3. Slot availability check (import here to avoid top-level circular dep)
-        from app.services.doctor_service import DoctorService
+        from app.services import DoctorService
         available_slots, err = DoctorService.get_available_slots(doctor_id, appt_date)
         if err:
             return None, err
@@ -180,7 +180,7 @@ class AppointmentService:
         3. Generating all possible slots.
         4. Removing booked slots.
         """
-        from app.services.doctor_service import DoctorService
+        from app.services import DoctorService
         
         # We delegate the actual sequence of these 4 steps to DoctorService 
         # because it already correctly hits the ScheduleModel & LeaveModel

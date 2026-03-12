@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.utils.auth import get_current_admin
-from app.services.admin_service import AdminService
+from app.utils import get_current_admin
+from app.services import AdminService
 
 router = APIRouter()
 

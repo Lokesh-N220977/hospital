@@ -1,13 +1,14 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import Optional
 from datetime import datetime
-from app.models.doctor_model import DoctorCreate, DoctorModel
-from app.models.schedule_model import ScheduleSet
-from app.models.leave_model import DoctorLeave
-from app.utils.auth import get_current_admin, get_current_doctor
-from app.utils.hash import hash_password
-from app.services.doctor_service import DoctorService
-from app.services.appointment_service import AppointmentService
+from app.schemas import DoctorCreate
+from app.models import DoctorModel
+from app.schemas import ScheduleSet
+from app.schemas import DoctorLeave
+from app.utils import get_current_admin, get_current_doctor
+from app.utils import hash_password
+from app.services import DoctorService
+from app.services import AppointmentService
 
 router = APIRouter()
 

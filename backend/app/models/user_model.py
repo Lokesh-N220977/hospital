@@ -1,49 +1,12 @@
-from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any, List
 from bson import ObjectId
 from app.database import database
 
-# --- Pydantic Schemas ---
-class UserCreate(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
-    phone: str
-    gender: Optional[str] = None
-    dob: Optional[str] = None
-    blood_group: Optional[str] = None
-    emergency_contact: Optional[str] = None
-    address: Optional[str] = None
-    role: Optional[str] = "patient"
-
-class UserUpdate(BaseModel):
-    name: Optional[str] = None
-    email: Optional[EmailStr] = None
-    phone: Optional[str] = None
-    gender: Optional[str] = None
-    dob: Optional[str] = None
-    blood_group: Optional[str] = None
-    emergency_contact: Optional[str] = None
-    address: Optional[str] = None
-
-class UserProfileUpdate(BaseModel):
-    fullName: Optional[str] = None
-    email: Optional[EmailStr] = None
-    phone: Optional[str] = None
-    dob: Optional[str] = None
-    gender: Optional[str] = None
-    bloodGroup: Optional[str] = None
-    emergencyContact: Optional[str] = None
-    address: Optional[str] = None
-    profilePic: Optional[str] = None
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
 
 # --- MongoDB Model ---
+
 class UserModel:
-    
+
     @staticmethod
     def get_by_email(email: str) -> Optional[Dict[str, Any]]:
         return database.users.find_one({"email": email})

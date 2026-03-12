@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.models.visit_history_model import VisitHistoryCreate
-from app.utils.auth import get_current_doctor
-from app.services.visit_history_service import VisitHistoryService
+from app.schemas import VisitHistoryCreate
+from app.utils import get_current_doctor
+from app.services import VisitHistoryService
 
 router = APIRouter()
 

@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-# Import routers from routes
-from app.routes import users, doctors, appointments, admin, visit_history
+from app.routes import users_router, doctors_router, appointments_router, admin_router, visit_history_router
 
 # Create the FastAPI app
-app = FastAPI(title="MedicPulse Backend API")
+app = FastAPI(
+    title="MedicPulse Backend API",
+    description="Clean, production-ready hospital management system backend.",
+    version="2.0.0"
+)
 
 # Enable CORS
 app.add_middleware(
@@ -17,12 +19,13 @@ app.add_middleware(
 )
 
 # Register routers
-app.include_router(users.router, prefix="/api/auth", tags=["auth"])
-app.include_router(doctors.router, prefix="/api/doctors", tags=["doctors"])
-app.include_router(appointments.router, prefix="/api/appointments", tags=["appointments"])
-app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
-app.include_router(visit_history.router, prefix="/api/visit-history", tags=["visit-history"])
+app.include_router(users_router.router, prefix="/api/auth", tags=["auth"])
+app.include_router(doctors_router.router, prefix="/api/doctors", tags=["doctors"])
+app.include_router(appointments_router.router, prefix="/api/appointments", tags=["appointments"])
+app.include_router(admin_router.router, prefix="/api/admin", tags=["admin"])
+app.include_router(visit_history_router.router, prefix="/api/visit-history", tags=["visit-history"])
 
-@app.get("/")
+@app.get("/", tags=["health"])
 def root():
-    return {"message": "API is running"}
+    """Health check endpoint."""
+    return {"message": "MedicPulse API is running smoothly", "status": "online"}

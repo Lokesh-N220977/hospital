@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.models.appointment_model import AppointmentBook, AppointmentCreate
-from app.utils.auth import get_current_patient, get_current_doctor
-from app.services.appointment_service import AppointmentService
+from app.schemas import AppointmentBook, AppointmentCreate
+from app.utils import get_current_patient, get_current_doctor
+from app.services import AppointmentService
 
 router = APIRouter()
 

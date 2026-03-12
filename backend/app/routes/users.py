@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.models.user_model import UserCreate, UserProfileUpdate, UserLogin
-from app.utils.auth import get_current_patient
-from app.services.auth_service import AuthService
+from app.schemas import UserCreate, UserProfileUpdate, UserLogin
+from app.utils import get_current_patient
+from app.services import AuthService
 
 router = APIRouter()
 
