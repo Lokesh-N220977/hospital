@@ -24,9 +24,10 @@
         .admin-table th,
         .admin-table td {
             text-align: left;
-            padding: 16px 24px;
+            padding: 10px 12px;
             border-bottom: 1px solid #edf2f7;
             vertical-align: middle;
+            font-size: 0.9rem;
         }
 
         .admin-table th {
@@ -101,8 +102,8 @@
         }
 
         .doc-avatar {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: #ebf8ff;
             color: #2b6cb0;
@@ -202,13 +203,13 @@
         /* Action Buttons */
         .action-btns {
             display: flex;
-            gap: 8px;
+            gap: 4px;
         }
 
         .action-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
             border: 1px solid #e2e8f0;
             background: white;
             color: #4a5568;
@@ -608,6 +609,42 @@
         </div>
     </div>
     <script src="../../js/script.js"></script>
+    <script>
+        function handleApprove(btn) {
+            const row = btn.closest('tr');
+            const statusCell = row.querySelector('.status-badge');
+            statusCell.className = 'status-badge status-approved';
+            statusCell.innerHTML = '<i class="fas fa-check-circle"></i> Approved';
+            alert('Appointment Approved Successfully (Simulated)');
+        }
+
+        function handleReschedule(btn) {
+            alert('Opening Reschedule Modal... (Simulated Interface)');
+        }
+
+        function handleDecline(btn) {
+            if(confirm('Are you sure you want to decline/cancel this appointment?')){
+                const row = btn.closest('tr');
+                const statusCell = row.querySelector('.status-badge');
+                statusCell.className = 'status-badge status-cancelled';
+                statusCell.innerHTML = '<i class="fas fa-ban"></i> Cancelled';
+                alert('Appointment Cancelled (Simulated)');
+            }
+        }
+
+        // Attach event listeners to existing buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.action-btn.approve').forEach(btn => {
+                btn.onclick = () => handleApprove(btn);
+            });
+            document.querySelectorAll('.action-btn.edit').forEach(btn => {
+                btn.onclick = () => handleReschedule(btn);
+            });
+            document.querySelectorAll('.action-btn.decline').forEach(btn => {
+                btn.onclick = () => handleDecline(btn);
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -581,22 +581,11 @@
                     }
                 }
             });
-            // Load live admin stats
-            const _token = localStorage.getItem('token');
-            if (_token) {
-                fetch('http://localhost:8000/api/admin/stats', {
-                    headers: { 'Authorization': `Bearer ${_token}` }
-                })
-                .then(r => r.ok ? r.json() : null)
-                .then(data => {
-                    if (!data) return;
-                    document.getElementById('statTotalAppointments').textContent = data.total_appointments ?? '—';
-                    document.getElementById('statTotalPatients').textContent = data.total_patients ?? '—';
-                    document.getElementById('statTodayAppointments').textContent = data.today_appointments ?? '—';
-                    document.getElementById('statTotalDoctors').textContent = data.total_doctors ?? '—';
-                })
-                .catch(() => {});
-            }
+            // Load static admin stats
+            document.getElementById('statTotalAppointments').textContent = '1,248';
+            document.getElementById('statTotalPatients').textContent = '856';
+            document.getElementById('statTodayAppointments').textContent = '42';
+            document.getElementById('statTotalDoctors').textContent = '64';
         });
 
         // Time Filter Interactivity

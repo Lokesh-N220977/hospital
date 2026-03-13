@@ -391,7 +391,7 @@
     </div>
     <script src="../../js/script.js"></script>
     <script>
-        async function handleAddDoctor(e) {
+        function handleAddDoctor(e) {
             e.preventDefault();
             // Simulating save animation
             const btn = e.target.querySelector('.btn-submit');
@@ -399,40 +399,13 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             btn.style.opacity = '0.7';
 
-            // Gather values
-            const payload = {
-                name: document.getElementById('docName').value,
-                email: document.getElementById('docEmail').value,
-                phone: document.getElementById('docPhone').value,
-                password: document.getElementById('docPassword').value,
-                specialization: document.getElementById('docSpecialty').value,
-                experience: parseInt(document.getElementById('docExp').value) || 0,
-                available_days: document.getElementById('docDays').value.split(',').map(d => d.trim()),
-                operating_hours: document.getElementById('docTime').value
-            };
-
-            try {
-                // Must ensure script.js is loaded for authFetch and API_BASE_URL
-                const response = await authFetch(`${API_BASE_URL}/doctors`, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    alert("Doctor successfully onboarded and system credentials sent!");
-                    e.target.reset();
-                } else {
-                    alert(data.detail || "Failed to onboard doctor!");
-                }
-            } catch (err) {
-                console.error("Add Doctor Error:", err);
-                alert("Could not reach the server to onboard the doctor.");
-            } finally {
+            setTimeout(() => {
+                alert("Doctor successfully onboarded (Simulated) and system credentials created!");
+                e.target.reset();
                 btn.innerHTML = oldText;
                 btn.style.opacity = '1';
-            }
+                window.location.href = 'manage-doctors.html';
+            }, 1000);
         }
     </script>
 </body>

@@ -1,0 +1,27 @@
+Traceback (most recent call last):
+  File "C:\Users\happy\Desktop\copy\backend\run_main.py", line 3, in <module>
+    import app.main
+  File "C:\Users\happy\Desktop\copy\backend\app\main.py", line 3, in <module>
+    from app.routes import users_router, doctors_router, appointments_router, admin_router, visit_history_router
+  File "C:\Users\happy\Desktop\copy\backend\app\routes\__init__.py", line 1, in <module>
+    from . import users as users_router
+  File "C:\Users\happy\Desktop\copy\backend\app\routes\users.py", line 3, in <module>
+    from app.utils import get_current_patient
+  File "C:\Users\happy\Desktop\copy\backend\app\utils\__init__.py", line 1, in <module>
+    from .auth import get_current_user, get_current_patient, get_current_admin, get_current_doctor
+  File "C:\Users\happy\Desktop\copy\backend\app\utils\auth.py", line 5, in <module>
+    from config.settings import settings
+  File "C:\Users\happy\Desktop\copy\backend\config\settings.py", line 13, in <module>
+    settings = Settings()
+  File "C:\Users\happy\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic_settings\main.py", line 242, in __init__
+    super().__init__(**__pydantic_self__.__class__._settings_build_values(sources, init_kwargs))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\happy\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 250, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for Settings
+secret_key
+  Extra inputs are not permitted [type=extra_forbidden, input_value='your_super_secret_key_12345', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+algorithm
+  Extra inputs are not permitted [type=extra_forbidden, input_value='HS256', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden

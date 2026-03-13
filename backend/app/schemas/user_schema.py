@@ -41,6 +41,10 @@ class UserProfileUpdate(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+    
+    model_config = {
+        "extra": "ignore"
+    }
 
 
 class UserResponse(BaseModel):

@@ -497,9 +497,9 @@
             setTimeout(() => {
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.get('status') === 'completed') {
-                    alert("Consultation nodes and attachments successfully updated!");
+                    alert("Consultation nodes and attachments successfully updated (Simulated)!");
                 } else {
-                    alert("Consultation nodes and attachments successfully saved! Appointment marked as completed.");
+                    alert("Consultation nodes and attachments successfully saved (Simulated)! Appointment marked as completed.");
                 }
                 window.location.href = 'today-appointments.html';
             }, 1000);
@@ -590,7 +590,6 @@
                 videoStream = null;
             }
         }
-
         function snapPhoto() {
             const video = document.getElementById('camera-stream');
             const canvas = document.getElementById('camera-canvas');
@@ -604,14 +603,20 @@
 
             const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
 
-            fetch(dataUrl)
-                .then(res => res.blob())
-                .then(blob => {
-                    const file = new File([blob], "camera_snapshot_" + Date.now() + ".jpg", { type: "image/jpeg" });
-                    const dt = new DataTransfer();
-                    dt.items.add(file);
-                    handleFileUpload({ target: { files: dt.files } });
-                });
+            // Static simulation of file conversion without fetch
+            const byteString = atob(dataUrl.split(',')[1]);
+            const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            const blob = new Blob([ab], {type: mimeString});
+            
+            const file = new File([blob], "camera_snapshot_" + Date.now() + ".jpg", { type: "image/jpeg" });
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            handleFileUpload({ target: { files: dt.files } });
 
             closeCameraModal();
         }

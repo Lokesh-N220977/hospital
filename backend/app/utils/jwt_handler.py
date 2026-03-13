@@ -3,8 +3,8 @@ from typing import Optional, Any
 from jose import jwt
 from config.settings import settings
 
-SECRET_KEY = settings.JWT_SECRET
-ALGORITHM = settings.JWT_ALGORITHM
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
 
 
 def create_access_token(data: dict, expires_delta: int = 60):

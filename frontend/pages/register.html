@@ -46,14 +46,13 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="input-group">
-                            <label for="email">Email Address</label>
-                            <div class="input-icon-wrapper">
-                                <i class="fas fa-envelope"></i>
-                                <input type="email" id="email" placeholder="email@example.com" required>
-                            </div>
+                    <div class="input-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" placeholder="email@example.com" required>
                         </div>
+                    </div>
 
                     <div class="form-row">
                         <div class="input-group">
@@ -73,7 +72,7 @@
                             <label for="phone">Phone Number</label>
                             <div class="input-icon-wrapper">
                                 <i class="fas fa-phone"></i>
-                                <input type="tel" id="phone" placeholder="+1 234 567 8900" required>
+                                <input type="tel" id="phone" placeholder="+1 234 567" required>
                             </div>
                         </div>
                     </div>
@@ -110,13 +109,11 @@
     </div>
 
     <script>
-        document.getElementById('registerForm').addEventListener('submit', async function (e) {
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
             const fullname = document.getElementById('fullname').value;
             const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const gender = document.getElementById('gender').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirm_password').value;
 
@@ -130,37 +127,11 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
             submitBtn.disabled = true;
 
-            const payload = {
-                name: fullname,
-                email: email,
-                phone: phone,
-                gender: gender,
-                password: password
-            };
-
-            try {
-                const response = await fetch('http://127.0.0.1:8000/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    alert("Account created successfully! Please login.");
-                    window.location.href = "login.html";
-                } else {
-                    alert(data.detail || "Registration failed.");
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                }
-            } catch (error) {
-                console.error('Registration Error:', error);
-                alert("Unable to reach the server. Please try again.");
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
+            // Simulate server delay
+            setTimeout(() => {
+                alert("Account created successfully (Simulated)! Please login.");
+                window.location.href = "login.html";
+            }, 1000);
         });
     </script>
 </body>

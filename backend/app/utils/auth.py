@@ -4,8 +4,8 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt
 from config.settings import settings
 
-SECRET_KEY = settings.JWT_SECRET
-ALGORITHM = settings.JWT_ALGORITHM
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
 
 security = HTTPBearer(auto_error=False)
 

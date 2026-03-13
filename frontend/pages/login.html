@@ -96,10 +96,11 @@
             });
         }
 
-        loginForm.addEventListener('submit', async function (e) {
+        loginForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const email = emailInput.value.trim();
             const password = passwordInput.value.trim();
+            const role = roleSelect.value;
 
             if (email && password) {
                 const submitBtn = this.querySelector('button[type="submit"]');
@@ -107,40 +108,19 @@
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
                 submitBtn.disabled = true;
 
-                try {
-                    const response = await fetch('http://127.0.0.1:8000/api/login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password })
-                    });
+                // Simulate brief authentication delay
+                setTimeout(() => {
+                    console.log("Static Authentication successful, redirecting...");
                     
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        localStorage.setItem('auth_token', data.access_token);
-                        localStorage.setItem('user_role', data.role);
-                        
-                        console.log("Authentication successful, redirecting...");
-                        
-                        // Strict backend-verified role redirect
-                        if (data.role === 'admin') {
-                            window.location.href = 'admin/dashboard.html';
-                        } else if (data.role === 'doctor') {
-                            window.location.href = 'doctor/dashboard.html';
-                        } else {
-                            window.location.href = 'patient_dashboard.html';
-                        }
+                    // Simple role-based redirect for static UI
+                    if (role === 'admin') {
+                        window.location.href = 'admin/dashboard.html';
+                    } else if (role === 'doctor') {
+                        window.location.href = 'doctor/dashboard.html';
                     } else {
-                        alert(data.detail || 'Login failed. Please check credentials.');
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
+                        window.location.href = 'patient_dashboard.html';
                     }
-                } catch (error) {
-                    console.error('Login error:', error);
-                    alert('Could not connect to the authentication server.');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                }
+                }, 800);
             }
         });
 

@@ -24,9 +24,10 @@
         .admin-table th,
         .admin-table td {
             text-align: left;
-            padding: 16px 24px;
+            padding: 10px 12px;
             border-bottom: 1px solid #edf2f7;
             vertical-align: middle;
+            font-size: 0.9rem;
         }
 
         .admin-table th {
@@ -53,8 +54,8 @@
         }
 
         .doctor-avatar {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             background-color: #ebf8ff;
             color: #2b6cb0;
             border-radius: 50%;
@@ -140,13 +141,13 @@
         /* Action Buttons */
         .action-btns {
             display: flex;
-            gap: 8px;
+            gap: 4px;
         }
 
         .action-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
             border: 1px solid #e2e8f0;
             background: white;
             color: #4a5568;
@@ -327,25 +328,13 @@
     </div>
     <script src="../../js/script.js"></script>
     <script>
-        const API = 'http://localhost:8000/api';
-        let allDoctors = [];
-
-        function getToken() {
-            return localStorage.getItem('token');
-        }
-
-        async function loadDoctors() {
-            const tbody = document.getElementById('doctorsTableBody');
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#718096;">Loading...</td></tr>';
-            try {
-                const res = await fetch(`${API}/doctors`);
-                if (!res.ok) throw new Error('Failed to load doctors');
-                allDoctors = await res.json();
-                renderTable(allDoctors);
-            } catch (e) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:#e53e3e;">Error: ${e.message}</td></tr>`;
-            }
-        }
+        // Static Mock Data for Doctors
+        let allDoctors = [
+            { _id: '1', name: 'Dr. Rahul Sharma', email: 'rahul@example.com', specialization: 'Cardiologist', experience: '12', phone: '+91 9876543210' },
+            { _id: '2', name: 'Dr. Priya Patel', email: 'priya@example.com', specialization: 'Dermatologist', experience: '8', phone: '+91 8765432109' },
+            { _id: '3', name: 'Dr. Ananya Singh', email: 'ananya@example.com', specialization: 'Dentist', experience: '10', phone: '+91 7654321098' },
+            { _id: '4', name: 'Dr. Rohan Gupta', email: 'rohan@example.com', specialization: 'Orthopedic', experience: '15', phone: '+91 6543210987' }
+        ];
 
         function renderTable(doctors) {
             const tbody = document.getElementById('doctorsTableBody');
@@ -373,6 +362,12 @@
                     <td><span class="badge" style="background:#dcfce7;color:#166534;"><i class="fas fa-circle" style="font-size:8px;margin-right:4px;"></i> Active</span></td>
                     <td>
                         <div class="action-btns">
+                            <button class="action-btn" title="View Details" onclick="handleView('${doc._id}', '${doc.name}')"><i class="fas fa-eye" style="color:#3b82f6;"></i></button>
+                            <button class="action-btn" title="Edit Doctor" onclick="handleEdit('${doc._id}', '${doc.name}')"><i class="fas fa-edit" style="color:#10b981;"></i></button>
+                            <button class="action-btn" title="View Schedule" onclick="handleSchedule('${doc._id}', '${doc.name}')" style="color:#6366f1; border-color:#c7d2fe;"><i class="fas fa-calendar-alt"></i></button>
+                            <button class="action-btn" title="Download Performance Report" onclick="alert('Downloading Report for Dr. ${doc.name}...')"><i class="fas fa-file-pdf" style="color:#ef4444;"></i></button>
+                            <button class="action-btn" title="View Activity Log" onclick="alert('Opening Activity Log...')"><i class="fas fa-history" style="color:#64748b;"></i></button>
+                            <button class="action-btn" title="Deactivate Doctor" onclick="toggleStatus('${doc._id}', '${doc.name}')" style="color:#f59e0b; border-color:#fef3c7;"><i class="fas fa-user-slash"></i></button>
                             <button class="action-btn delete" title="Remove" onclick="confirmDelete('${doc._id}', '${doc.name}')"><i class="fas fa-trash"></i></button>
                         </div>
                     </td>
@@ -382,7 +377,7 @@
 
         // Live search
         document.addEventListener('DOMContentLoaded', () => {
-            loadDoctors();
+            renderTable(allDoctors);
             const searchInput = document.querySelector('.search-box input');
             searchInput.addEventListener('input', (e) => {
                 const q = e.target.value.toLowerCase();
@@ -394,24 +389,36 @@
             });
         });
 
-        async function confirmDelete(doctorId, doctorName) {
-            if (!confirm(`Are you sure you want to remove Dr. ${doctorName}? This action cannot be undone.`)) return;
-            const token = getToken();
-            if (!token) { alert('Admin login required.'); return; }
-            try {
-                const res = await fetch(`${API}/admin/remove-doctor/${doctorId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.detail || 'Delete failed');
+        function handleView(id, name) {
+            alert(`Viewing profile for Dr. ${name} (Simulated Details)`);
+        }
+
+        function handleEdit(id, name) {
+            const newName = prompt(`Edit Doctor Name:`, name);
+            if (newName && newName !== name) {
+                const doc = allDoctors.find(d => d._id === id);
+                if (doc) {
+                    doc.name = newName;
+                    renderTable(allDoctors);
+                    alert(`Updated ${name} to ${newName} (Simulated).`);
                 }
-                alert(`Dr. ${doctorName} has been removed.`);
-                loadDoctors();
-            } catch (e) {
-                alert(`Error: ${e.message}`);
             }
+        }
+
+        function handleSchedule(id, name) {
+            alert(`Opening schedule for Dr. ${name}... (Redirecting to schedule simulation)`);
+            window.location.href = 'appointments.html'; // Or a specific schedule page if it exists
+        }
+
+        function toggleStatus(id, name) {
+            alert(`Doctor ${name} status has been toggled (Simulated Active/Inactive)`);
+        }
+
+        function confirmDelete(doctorId, doctorName) {
+            if (!confirm(`Are you sure you want to remove Dr. ${doctorName}? (Simulated action)`)) return;
+            allDoctors = allDoctors.filter(d => d._id !== doctorId);
+            renderTable(allDoctors);
+            alert(`Dr. ${doctorName} has been removed (Simulated).`);
         }
     </script>
 </body>
