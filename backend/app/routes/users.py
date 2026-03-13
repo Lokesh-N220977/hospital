@@ -1,53 +1,60 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.schemas import UserCreate, UserProfileUpdate, UserLogin
-from app.utils import get_current_patient
-from app.services import AuthService
+from app.database import users_collection
+from app.models.user_model import UserRegister, UserLogin
+from app.core.security import hash_password, verify_password
+from app.core.auth_utils import create_access_token
+from app.core.dependencies import get_current_user
 
-router = APIRouter()
+router = APIRouter(prefix="/api/auth", tags=["Auth"])
+
 
 @router.post("/register")
-def register_user(user: UserCreate):
-    user_id, error = AuthService.register_user(user.dict())
-    if error:
-        raise HTTPException(status_code=400, detail=error)
+async def register_user(user: UserRegister):
 
-    return {"message": "User registered successfully", "id": user_id}
+    existing_user = await users_collection.find_one({"email": user.email})
 
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    user_data = {
+        "name": user.name,
+        "email": user.email,
+        "phone": user.phone,
+        "gender": user.gender,
+        "password": hash_password(user.password),
+        "role": "patient"
+    }
+
+    await users_collection.insert_one(user_data)
+
+    return {"message": "User registered successfully"}
 
 @router.post("/login")
-def login_user(user: UserLogin):
-    token_data, error = AuthService.login_user(user.email, user.password)
-    
-    if error:
-        status_code = 404 if error == "User not found" else 401
-        raise HTTPException(status_code=status_code, detail=error)
+async def login_user(user: UserLogin):
+
+    db_user = await users_collection.find_one({"email": user.email})
+
+    if not db_user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    if not verify_password(user.password, db_user["password"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    token = create_access_token(
+        {
+            "sub": db_user["email"],
+            "role": db_user["role"]
+        }
+    )
 
     return {
-        "message": "Login successful",
-        **token_data
+        "access_token": token,
+        "token_type": "bearer",
+        "role": db_user["role"],
+        "email": db_user["email"]
     }
 
 
-@router.get("/profile")
-def get_profile(user_id: str = Depends(get_current_patient)):
-    profile_data, error = AuthService.get_profile(user_id)
-    
-    if error:
-        status_code = 404 if error == "User not found" else 400
-        raise HTTPException(status_code=status_code, detail=error)
-
-    return profile_data
-
-
-@router.put("/profile")
-def update_profile(
-    profile_update: UserProfileUpdate,
-    user_id: str = Depends(get_current_patient)
-):
-    success, error = AuthService.update_profile(user_id, profile_update.dict())
-    
-    if error:
-        status_code = 400 if "data" in error else 404
-        raise HTTPException(status_code=status_code, detail=error)
-        
-    return {"message": "Profile updated successfully"}
+@router.get("/my-profile")
+async def profile(current_user=Depends(get_current_user)):
+    return current_user

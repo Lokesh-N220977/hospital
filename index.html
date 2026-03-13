@@ -6,13 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedicPulse - Professional Healthcare Booking Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="frontend/css/style.css">
+    <link rel="stylesheet" href="frontend/css/main.css">
 </head>
 
-<body>
+<body data-page="home">
 
-    <!-- Navigation Bar -->
-    <nav class="navbar" id="navbar">
+    <nav class="navbar" id="landing-navbar">
         <div class="container nav-container">
             <a href="index.html" class="logo">
                 <i class="fas fa-notes-medical"></i> MedicPulse
@@ -36,13 +35,13 @@
     <section class="hero fade-in-section">
         <div class="container hero-grid">
             <div class="hero-content">
-                <span class="hero-badge">Modern Healthcare Solution</span>
+                <span class="hero-badge rounded-xl">Modern Healthcare Solution</span>
                 <h1>Book Doctor Appointments in Seconds</h1>
                 <p>Experience seamless healthcare access. Find top-rated doctors, book appointments instantly, and
                     manage your health records securely online.</p>
                 <div class="hero-btns">
-                    <a href="frontend/pages/login.html" class="btn btn-primary">Book Appointment</a>
-                    <a href="frontend/pages/doctors.html" class="btn btn-outline">Find Doctors</a>
+                    <a href="frontend/pages/login.html" class="btn btn-primary flex-center rounded-sm">Book Appointment</a>
+                    <a href="frontend/pages/doctors.html" class="btn btn-outline flex-center rounded-sm">Find Doctors</a>
                 </div>
             </div>
             <div class="hero-image">
@@ -55,19 +54,19 @@
     <!-- Trust Metrics Section -->
     <section class="trust-metrics fade-in-section">
         <div class="container trust-container">
-            <div class="trust-item">
+            <div class="trust-item text-center">
                 <h3>10,000+</h3>
                 <p>Patients Served</p>
             </div>
-            <div class="trust-item">
+            <div class="trust-item text-center">
                 <h3>500+</h3>
                 <p>Verified Doctors</p>
             </div>
-            <div class="trust-item">
+            <div class="trust-item text-center">
                 <h3>50+</h3>
                 <p>Partner Hospitals</p>
             </div>
-            <div class="trust-item">
+            <div class="trust-item text-center">
                 <h3>24/7</h3>
                 <p>Support</p>
             </div>
@@ -77,28 +76,28 @@
     <!-- Features Section -->
     <section class="features fade-in-section" id="about">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header text-center">
                 <h2>Why Choose MedicPulse?</h2>
                 <p>We combine medical expertise with modern technology to provide you the best healthcare experience.
                 </p>
             </div>
             <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="feature-card text-center shadow-md rounded-md">
+                    <div class="feature-icon rounded-full flex-center"><i class="fas fa-calendar-alt"></i></div>
                     <h3>Easy Appointment Booking</h3>
                     <p>Schedule your visits in just a few clicks. Reschedule or cancel anytime without hassle.</p>
                 </div>
-                <div class="feature-card">
+                <div class="feature-card text-center shadow-md rounded-md">
                     <div class="feature-icon"><i class="fas fa-user-md"></i></div>
                     <h3>Verified Doctors</h3>
                     <p>Every practitioner is thoroughly vetted to ensure you receive care from qualified experts.</p>
                 </div>
-                <div class="feature-card">
+                <div class="feature-card text-center shadow-md rounded-md">
                     <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
                     <h3>Secure Medical Records</h3>
                     <p>Your privacy is our priority. We use strict encryption for all your health data.</p>
                 </div>
-                <div class="feature-card">
+                <div class="feature-card text-center shadow-md rounded-md">
                     <div class="feature-icon"><i class="fas fa-clock"></i></div>
                     <h3>24/7 Access</h3>
                     <p>Access your health dashboard, lab results, and upcoming appointments anytime.</p>
@@ -110,12 +109,12 @@
     <!-- Featured Doctors Section -->
     <section class="featured-doctors fade-in-section">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header text-center">
                 <h2>Meet Our Specialists</h2>
                 <p>Consult with our top-rated specialists who are dedicated to your overall well-being.</p>
             </div>
             <div class="doctors-grid">
-                <div class="doctor-card">
+                <div class="doctor-card shadow-md rounded-md">
                     <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300&h=300"
                         alt="Dr. Sarah Jenkins Cardiologist">
                     <div class="doctor-info">
@@ -128,7 +127,7 @@
                         <a href="frontend/pages/login.html" class="btn btn-outline btn-block">Book Appointment</a>
                     </div>
                 </div>
-                <div class="doctor-card">
+                <div class="doctor-card shadow-md rounded-md">
                     <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300&h=300"
                         alt="Dr. Michael Lee Dermatologist">
                     <div class="doctor-info">
@@ -141,7 +140,7 @@
                         <a href="frontend/pages/login.html" class="btn btn-outline btn-block">Book Appointment</a>
                     </div>
                 </div>
-                <div class="doctor-card">
+                <div class="doctor-card shadow-md rounded-md">
                     <img src="https://images.unsplash.com/photo-1594824432258-f77f00f80bc8?auto=format&fit=crop&q=80&w=300&h=300"
                         alt="Dr. Emily Chen Dentist">
                     <div class="doctor-info">
@@ -164,7 +163,7 @@
     <!-- Doctor Specialties Section -->
     <section class="specialties fade-in-section">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header text-center">
                 <h2>Browse by Specialty</h2>
                 <p>Find experienced specialists across various medical departments.</p>
             </div>
@@ -204,22 +203,22 @@
     <!-- How It Works Section -->
     <section class="how-it-works fade-in-section">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header text-center">
                 <h2>How It Works</h2>
                 <p>Your journey to better health begins with three simple steps.</p>
             </div>
             <div class="process-grid">
-                <div class="process-step">
+                <div class="process-step text-center">
                     <div class="step-icon"><i class="fas fa-search"></i></div>
                     <h3>Search Doctor</h3>
                     <p>Find the right specialist based on symptoms, specialty, or location.</p>
                 </div>
-                <div class="process-step">
+                <div class="process-step text-center">
                     <div class="step-icon"><i class="fas fa-calendar-check"></i></div>
                     <h3>Book Appointment</h3>
                     <p>Choose an available time slot and confirm your booking instantly.</p>
                 </div>
-                <div class="process-step">
+                <div class="process-step text-center">
                     <div class="step-icon"><i class="fas fa-clinic-medical"></i></div>
                     <h3>Visit Clinic</h3>
                     <p>Visit the doctor on time or consult online for a seamless experience.</p>
@@ -231,7 +230,7 @@
     <!-- Testimonials Section -->
     <section class="testimonials fade-in-section">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header text-center">
                 <h2>Patient Testimonials</h2>
                 <p>Read what our trusted patients have to say about their MedicPulse experience.</p>
             </div>
@@ -333,7 +332,7 @@
         </div>
     </footer>
 
-    <script src="frontend/js/main.js"></script>
+    <script type="module" src="frontend/js/main.js"></script>
 </body>
 
 </html>

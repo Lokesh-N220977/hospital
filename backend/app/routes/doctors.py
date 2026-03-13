@@ -1,173 +1,157 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
-from typing import Optional
+from fastapi import APIRouter
+from app.database import doctors_collection
+from datetime import datetime, timedelta
+from app.database import doctor_schedules_collection
+from app.database import doctor_leaves_collection
+from app.database import appointments_collection
 from datetime import datetime
-from app.schemas import DoctorCreate
-from app.models import DoctorModel
-from app.schemas import ScheduleSet
-from app.schemas import DoctorLeave
-from app.utils import get_current_admin, get_current_doctor
-from app.utils import hash_password
-from app.services import DoctorService
-from app.services import AppointmentService
-
-router = APIRouter()
+from app.database import appointments_collection
 
 
-# ──────────────────────────────────────────────────────────────────────
-# Doctor listing
-# ──────────────────────────────────────────────────────────────────────
+router = APIRouter(prefix="/api/doctors", tags=["Doctors"])
 
-@router.get(
-    "",
-    summary="List all doctors",
-    description="Returns doctors with specialization, experience, and consultation fee. Passwords are never included.",
-)
-def get_doctors(
-    specialization: Optional[str] = Query(None, description="Filter by specialization"),
+
+@router.get("/")
+async def get_all_doctors(
+    specialization: str | None = None,
+    min_experience: int | None = None,
+    max_fee: int | None = None
 ):
-    doctors = DoctorService.get_all_doctors()
+
+    query = {"available": True}
+
     if specialization:
-        doctors = [
-            d for d in doctors
-            if d.get("specialization", "").lower() == specialization.lower()
-        ]
+        query["specialization"] = specialization
+
+    if min_experience:
+        query["experience"] = {"$gte": min_experience}
+
+    if max_fee:
+        query["consultation_fee"] = {"$lte": max_fee}
+
+    doctors = []
+
+    async for doctor in doctors_collection.find(query):
+
+        doctor["_id"] = str(doctor["_id"])
+        doctors.append(doctor)
+
     return doctors
 
 
-@router.get(
-    "/today-appointments",
-    summary="Today's appointments for the authenticated doctor",
-    description=(
-        "Returns all non-cancelled appointments for the logged-in doctor on today's date, "
-        "sorted by appointment time. Requires doctor (or admin) JWT token."
-    ),
-)
-def get_today_appointments(
-    doctor_id: str = Depends(get_current_doctor),
-):
-    appointments = AppointmentService.get_today_appointments(doctor_id)
-    today = datetime.now().strftime("%Y-%m-%d")
-    return {"appointments": appointments, "total": len(appointments), "date": today}
+@router.get("/{doctor_id}")
+async def get_doctor(doctor_id: str):
 
+    from bson import ObjectId
 
-@router.get(
-    "/{doctor_id}",
-    summary="Get a single doctor",
-    description="Returns 404 if not found, 400 if the ID format is invalid.",
-)
-def get_doctor(doctor_id: str):
-    if len(doctor_id) != 24:
-        raise HTTPException(status_code=400, detail="Invalid doctor ID format")
-    doctor, error = DoctorService.get_doctor_by_id(doctor_id)
-    if error:
-        raise HTTPException(status_code=404, detail=error)
+    doctor = await doctors_collection.find_one({"_id": ObjectId(doctor_id)})
+
+    if doctor:
+        doctor["_id"] = str(doctor["_id"])
+
     return doctor
 
 
-# ──────────────────────────────────────────────────────────────────────
-# Schedule
-# ──────────────────────────────────────────────────────────────────────
+@router.get("/{doctor_id}/slots")
+async def get_doctor_slots(doctor_id: str, date: str):
 
-@router.post(
-    "/set-schedule",
-    summary="Set (or update) a doctor's schedule",
-    description=(
-        "Creates or replaces the working schedule for a doctor. "
-        "Only one schedule document is kept per doctor (upsert). "
-        "Requires admin auth."
-    ),
-)
-def set_schedule(
-    schedule: ScheduleSet,
-    _admin: str = Depends(get_current_admin),
-):
-    schedule_id, error = DoctorService.set_schedule(
-        schedule.doctor_id, schedule.dict()
-    )
-    if error:
-        status_code = 404 if "not found" in error else 400
-        raise HTTPException(status_code=status_code, detail=error)
-    return {"message": "Schedule saved successfully", "id": schedule_id}
+    # check doctor leave
+    leave = await doctor_leaves_collection.find_one({
+        "doctor_id": doctor_id,
+        "leave_date": date
+    })
 
+    if leave:
+        return {"message": "Doctor is on leave"}
 
-@router.get(
-    "/{doctor_id}/schedule",
-    summary="Get a doctor's schedule",
-    description=(
-        "Returns the doctor's stored schedule. "
-        "Falls back to the doctor document's own timing fields if no schedule record exists."
-    ),
-)
-def get_schedule(doctor_id: str):
-    if len(doctor_id) != 24:
-        raise HTTPException(status_code=400, detail="Invalid doctor ID format")
-    schedule, error = DoctorService.get_schedule(doctor_id)
-    if error:
-        raise HTTPException(status_code=404, detail=error)
-    return schedule
+    # get weekday
+    day = datetime.strptime(date, "%Y-%m-%d").strftime("%A")
 
+    schedule = await doctor_schedules_collection.find_one({
+        "doctor_id": doctor_id,
+        "day": day
+    })
 
-# ──────────────────────────────────────────────────────────────────────
-# Leave
-# ──────────────────────────────────────────────────────────────────────
+    if not schedule:
+        return {"message": "Doctor not available on this day"}
 
-@router.post(
-    "/set-leave",
-    summary="Mark a doctor as on leave for a date",
-    description=(
-        "Records a leave day for a doctor. "
-        "Returns 409 if the date is already marked. "
-        "Requires admin auth."
-    ),
-)
-def set_leave(
-    leave: DoctorLeave,
-    _admin: str = Depends(get_current_admin),
-):
-    leave_id, error = DoctorService.set_leave(leave.doctor_id, leave.dict())
-    if error:
-        status_code = 409 if "already set" in error else 404
-        raise HTTPException(status_code=status_code, detail=error)
-    return {"message": "Leave recorded successfully", "id": leave_id}
+    start = datetime.strptime(schedule["start_time"], "%H:%M")
+    end = datetime.strptime(schedule["end_time"], "%H:%M")
+    duration = schedule["slot_duration"]
 
+    generated_slots = []
 
-@router.get(
-    "/{doctor_id}/leaves",
-    summary="Get all leave records for a doctor",
-    description="Returns all leave dates sorted ascending.",
-)
-def get_leaves(doctor_id: str):
-    if len(doctor_id) != 24:
-        raise HTTPException(status_code=400, detail="Invalid doctor ID format")
-    leaves, error = DoctorService.get_leaves(doctor_id)
-    if error:
-        raise HTTPException(status_code=404, detail=error)
-    return {"leaves": leaves, "total": len(leaves)}
+    while start < end:
+        generated_slots.append(start.strftime("%H:%M"))
+        start += timedelta(minutes=duration)
 
+    # find booked slots
+    booked_slots = []
 
-# ──────────────────────────────────────────────────────────────────────
-# Available slots
-# ──────────────────────────────────────────────────────────────────────
+    async for appt in appointments_collection.find({
+        "doctor_id": doctor_id,
+        "date": date,
+        "status": "booked"
+    }):
+        booked_slots.append(appt["time"])
 
-@router.get(
-    "/{doctor_id}/available-slots",
-    summary="Get available appointment slots",
-    description=(
-        "Generates available time slots for a doctor on a given date. "
-        "Returns [] if the doctor is on leave or the date is not a working day. "
-        "Already-booked and within-15-min slots are excluded."
-    ),
-)
-def get_available_slots(
-    doctor_id: str,
-    date: str = Query(..., description="Date in YYYY-MM-DD format"),
-):
-    if len(doctor_id) != 24:
-        raise HTTPException(status_code=400, detail="Invalid doctor ID format")
+    # remove booked slots
+    available_slots = [slot for slot in generated_slots if slot not in booked_slots]
 
-    slots, error = DoctorService.get_available_slots(doctor_id, date)
-    if error:
-        status_code = 400 if "format" in error else 404
-        raise HTTPException(status_code=status_code, detail=error)
+    return {
+        "doctor_id": doctor_id,
+        "date": date,
+        "available_slots": available_slots
+    }
 
-    return {"doctor_id": doctor_id, "date": date, "available_slots": slots}
+@router.get("/{doctor_id}/dashboard")
+async def doctor_dashboard(doctor_id: str):
+
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    today_appointments = []
+    completed = 0
+    upcoming = 0
+
+    async for appt in appointments_collection.find({
+        "doctor_id": doctor_id,
+        "date": today
+    }):
+
+        appt["_id"] = str(appt["_id"])
+        today_appointments.append(appt)
+
+        if appt["status"] == "completed":
+            completed += 1
+
+        if appt["status"] == "booked":
+            upcoming += 1
+
+    return {
+        "doctor_id": doctor_id,
+        "date": today,
+        "total_appointments": len(today_appointments),
+        "completed": completed,
+        "upcoming": upcoming,
+        "appointments": today_appointments
+    }
+
+@router.get("/search")
+async def search_doctors(query: str):
+
+    doctors = []
+
+    async for doctor in doctors_collection.find(
+        {"name": {"$regex": query, "$options": "i"}}
+    ).limit(5):
+
+        doctor["_id"] = str(doctor["_id"])
+
+        doctors.append({
+            "id": doctor["_id"],
+            "name": doctor["name"],
+            "specialization": doctor["specialization"]
+        })
+
+    return doctors
+

@@ -1,61 +1,91 @@
-from fastapi import APIRouter, HTTPException, Depends
-from app.schemas import VisitHistoryCreate
-from app.utils import get_current_doctor
-from app.services import VisitHistoryService
+from fastapi import APIRouter, HTTPException
+from bson import ObjectId
 
-router = APIRouter()
-
-
-@router.post(
-    "/add",
-    summary="Record a visit / complete an appointment",
-    description=(
-        "Creates a visit history entry for a completed appointment. "
-        "Only the doctor assigned to the appointment can add a record. "
-        "Duplicate records for the same appointment are rejected. "
-        "The appointment is automatically marked as 'completed'."
-    ),
-)
-def add_visit(
-    visit: VisitHistoryCreate,
-    doctor_id: str = Depends(get_current_doctor),
-):
-    visit_id, error = VisitHistoryService.add_visit(doctor_id, visit.dict())
-    if error:
-        status_code = (
-            403 if "Not authorized" in error
-            else 409 if "already recorded" in error
-            else 404 if "not found" in error.lower()
-            else 400
-        )
-        raise HTTPException(status_code=status_code, detail=error)
-
-    return {"message": "Visit history recorded successfully", "id": visit_id}
+from app.database import visit_history_collection, appointments_collection
+from app.models.visit_model import VisitCreate
+from fastapi.responses import FileResponse
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+import os
 
 
-@router.get(
-    "/patient/{patient_id}",
-    summary="Get visit history for a patient",
-    description=(
-        "Returns all past visit records for the given patient, "
-        "sorted most recent first. "
-        "Includes diagnosis, prescription, notes, doctor name, and visit date."
-    ),
-)
-def get_patient_history(patient_id: str):
-    records, error = VisitHistoryService.get_patient_history(patient_id)
-    if error:
-        raise HTTPException(status_code=400, detail=error)
-    return {"history": records, "total": len(records)}
+router = APIRouter(prefix="/api/visit-history", tags=["Visit History"])
 
 
-@router.get(
-    "/doctor/{doctor_id}",
-    summary="Get all visits recorded by a doctor",
-    description="Returns all visit history entries created by the given doctor, sorted most recent first.",
-)
-def get_doctor_history(doctor_id: str):
-    records, error = VisitHistoryService.get_doctor_history(doctor_id)
-    if error:
-        raise HTTPException(status_code=400, detail=error)
-    return {"history": records, "total": len(records)}
+@router.post("/add")
+async def add_visit(visit: VisitCreate):
+
+    appointment = await appointments_collection.find_one({
+        "_id": ObjectId(visit.appointment_id)
+    })
+
+    if not appointment:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+
+    visit_data = {
+        "appointment_id": visit.appointment_id,
+        "doctor_id": appointment["doctor_id"],
+        "patient_id": appointment["patient_id"],
+        "diagnosis": visit.diagnosis,
+        "medicines": visit.medicines,
+        "notes": visit.notes
+    }
+
+    result = await visit_history_collection.insert_one(visit_data)
+
+    await appointments_collection.update_one(
+        {"_id": ObjectId(visit.appointment_id)},
+        {"$set": {"status": "completed"}}
+    )
+
+    return {
+        "message": "Visit recorded",
+        "visit_id": str(result.inserted_id)
+    }
+
+
+@router.get("/patient/{patient_id}")
+async def get_patient_history(patient_id: str):
+
+    visits = []
+
+    async for visit in visit_history_collection.find({"patient_id": patient_id}):
+
+        visit["_id"] = str(visit["_id"])
+        visits.append(visit)
+
+    return visits
+
+@router.get("/prescription/{visit_id}")
+async def generate_prescription(visit_id: str):
+
+    visit = await visit_history_collection.find_one({"_id": ObjectId(visit_id)})
+
+    if not visit:
+        raise HTTPException(status_code=404, detail="Visit not found")
+
+    file_path = f"prescription_{visit_id}.pdf"
+
+    styles = getSampleStyleSheet()
+
+    story = []
+
+    story.append(Paragraph("Hospital Prescription", styles["Title"]))
+    story.append(Spacer(1, 20))
+
+    story.append(Paragraph(f"Diagnosis: {visit['diagnosis']}", styles["Normal"]))
+    story.append(Spacer(1, 10))
+
+    story.append(Paragraph("Medicines:", styles["Heading3"]))
+
+    for med in visit["medicines"]:
+        story.append(Paragraph(f"- {med}", styles["Normal"]))
+
+    story.append(Spacer(1, 10))
+
+    story.append(Paragraph(f"Notes: {visit['notes']}", styles["Normal"]))
+
+    pdf = SimpleDocTemplate(file_path)
+    pdf.build(story)
+
+    return FileResponse(file_path, filename=file_path)

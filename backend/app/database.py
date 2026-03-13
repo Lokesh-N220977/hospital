@@ -1,18 +1,41 @@
-import os
-from pymongo import MongoClient
-from dotenv import load_dotenv
-from config.settings import settings
+from motor.motor_asyncio import AsyncIOMotorClient
+from app.config import MONGO_URI, DATABASE_NAME
 
-# Load environment variables from .env file
-load_dotenv()
+client = AsyncIOMotorClient(MONGO_URI)
 
-MONGO_URL = os.getenv("MONGO_URL") or settings.MONGO_URL
+db = client[DATABASE_NAME]
 
-if not MONGO_URL:
-    raise ValueError("MONGO_URL environment variable is not set")
+users_collection = db["users"]
+doctors_collection = db["doctors"]
+appointments_collection = db["appointments"]
+doctor_schedules_collection = db["doctor_schedules"]
+doctor_leaves_collection = db["doctor_leaves"]
+visit_history_collection = db["visit_history"]
+schedules_collection = db["schedules"]
+leaves_collection = db["leaves"]
+doctor_slots_collection = db["doctor_slots"]
 
-# Connect to MongoDB Atlas using PyMongo
-client = MongoClient(MONGO_URL, tlsAllowInvalidCertificates=True)
 
-# Expose the global database object
-database = client.health_appointment
+async def create_indexes():
+    await users_collection.create_index("email", unique=True)
+    await doctors_collection.create_index("name")
+    await doctors_collection.create_index([("name", "text")])
+    await appointments_collection.create_index("doctor_id")
+    await appointments_collection.create_index("patient_id")
+    await appointments_collection.create_index(
+    [("doctor_id", 1), ("date", 1), ("time", 1)],
+    unique=True
+    )
+
+    from pymongo import ASCENDING
+
+    async def create_indexes():
+
+        await appointments_collection.create_index(
+            [
+                ("doctor_id", ASCENDING),
+                ("appointment_date", ASCENDING),
+                ("appointment_time", ASCENDING)
+            ],
+            unique=True
+        )
