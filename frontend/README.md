@@ -1,73 +1,53 @@
-# React + TypeScript + Vite
+# MedicPulse - Modern Healthcare Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MedicPulse is a high-fidelity, responsive healthcare management platform designed to bridge the gap between patients and medical professionals.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Patient Portal
+- **Interactive Dashboard**: Health metrics and appointment summaries.
+- **Smart Booking**: Find doctors by specialty and book slots instantly.
+- **Notifications**: Stay updated with appointment reminders and medical alerts.
+- **Visit History**: Detailed timeline of past consultations and prescriptions.
 
-## React Compiler
+### Doctor Portal
+- **Dynamic Schedule**: Manage daily consultations and patient flow.
+- **Consultation Engine**: In-session medical logging and prescription generation.
+- **Patient Management**: Centralized records of all assigned patients.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Admin Portal
+- **Reports & Analytics**: High-detail business intelligence with live charting (Recharts).
+- **Global Management**: Manage all doctors, patients, and hospital schedules.
+- **System Settings**: Configure platform-wide parameters.
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Vanilla CSS (CSS Variables + Grid + Flexbox)
+- **Charts**: Recharts
+- **Icons**: Lucide React + FontAwesome
+- **Animations**: native CSS animations for high performance
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📦 Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2. **Run Dev Server**:
+   ```bash
+   npm run dev
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. **Build for Production**:
+   ```bash
+   npm run build
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🧹 Project Structure
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `src/components/layout`: Modular layouts for different user roles.
+- `src/pages`: Feature-specific pages for Public, Patient, Doctor, and Admin.
+- `src/styles`: Centralized design system using CSS variables and modular stylesheets.
+- `src/services`: API interaction layer.

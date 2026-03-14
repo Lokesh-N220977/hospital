@@ -96,23 +96,22 @@ const Home: React.FC = () => {
             <section className="trust-metrics-section">
                 <div className="container">
                     <div className="trust-grid">
-                        <div className="trust-item">
+                        <div className="trust-item no-anim">
                             <div className="trust-icon"><FaUsers /></div>
                             <h3>10,000+</h3>
                             <p>Patients Served</p>
                         </div>
-                        <div className="trust-item">
+                        <div className="trust-item no-anim">
                             <div className="trust-icon"><FaUserCheck /></div>
                             <h3>500+</h3>
                             <p>Verified Doctors</p>
                         </div>
-                        <div className="trust-item">
+                        <div className="trust-item no-anim">
                             <div className="trust-icon"><FaHospital /></div>
                             <h3>50+</h3>
                             <p>Partner Hospitals</p>
                         </div>
-                        {/* 24/7 is static — no number to count */}
-                        <div className="trust-item">
+                        <div className="trust-item no-anim">
                             <div className="trust-icon"><FaHeadset /></div>
                             <h3>24/7</h3>
                             <p>Support</p>
@@ -146,22 +145,31 @@ const Home: React.FC = () => {
                     <div className="specialists-grid-v">
                         {specialists.map((s, idx) => (
                             <div key={idx} className="specialist-card-v">
-                                {/* Image with name/spec as gradient overlay */}
+                                {/* Top part: Image with name overlay */}
                                 <div className="sc-img">
                                     <img src={s.image} alt={s.name} />
                                     <div className="sc-img-badge">{s.specialization}</div>
                                     <div className="sc-img-overlay">
-                                        <h3 className="sc-name">{s.name}</h3>
+                                        <div className="sc-name-row">
+                                            <h3 className="sc-name">{s.name}</h3>
+                                            <FaUserCheck className="sc-verified" />
+                                        </div>
                                         <p className="sc-spec">{s.specialization}</p>
                                     </div>
                                 </div>
-                                {/* Body — just stats + button */}
+                                {/* Bottom part: Details in white space */}
                                 <div className="sc-body">
                                     <div className="sc-meta">
-                                        <span><FaBriefcase /> {s.experience}</span>
-                                        <span><FaStar className="sc-star" /> {s.rating}</span>
+                                        <span className="sc-meta-item">
+                                            <FaBriefcase /> {s.experience}
+                                        </span>
+                                        <span className="sc-meta-item">
+                                            <FaStar className="sc-star" /> {s.rating.split(' ')[0]}
+                                        </span>
                                     </div>
-                                    <Link to="/login" className="sc-btn">Book Appointment</Link>
+                                    <Link to="/login" className="sc-btn">
+                                        Book Appointment <FaArrowRight />
+                                    </Link>
                                 </div>
                             </div>
                         ))}
@@ -173,7 +181,7 @@ const Home: React.FC = () => {
             </section>
 
             {/* ═══ Browse by Specialty ═══ */}
-            <section className="specialty-section">
+            <section className="specialty-section" id="about">
                 <div className="container">
                     <h2 className="section-title">Browse by <span className="blue">Specialty</span></h2>
                     <p className="section-subtitle">Find experienced specialists across various medical departments.</p>

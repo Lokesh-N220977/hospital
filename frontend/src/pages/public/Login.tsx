@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
     FaPlusSquare, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaArrowLeft, FaSignInAlt,
     FaUserInjured, FaUserMd, FaUserShield
 } from 'react-icons/fa';
+
+const roleRedirects: Record<string, string> = {
+    patient: '/patient/dashboard',
+    doctor:  '/doctor/dashboard',
+    admin:   '/admin/dashboard',
+};
 
 const roles = [
     { key: 'patient', label: 'Patient',      icon: <FaUserInjured />, color: '#007bff', canRegister: true  },
@@ -18,6 +24,7 @@ const heroLines = [
 ];
 
 const Login: React.FC = () => {
+    const navigate = useNavigate();
     const [showPass, setShowPass] = useState(false);
     const [role, setRole]         = useState('patient');
     const [heroLine, setHeroLine] = useState(0);
@@ -104,7 +111,7 @@ const Login: React.FC = () => {
                         ))}
                     </div>
 
-                    <form className="sf-form sf-form--compact" onSubmit={e => e.preventDefault()}>
+                    <form className="sf-form sf-form--compact" onSubmit={e => { e.preventDefault(); navigate(roleRedirects[role]); }}>
                         <div className="sf-field">
                             <label>Email Address</label>
                             <div className="sf-input-wrap">

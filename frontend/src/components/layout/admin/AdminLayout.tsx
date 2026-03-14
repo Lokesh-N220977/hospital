@@ -1,3 +1,4 @@
+import { useState } from "react"
 import AdminSidebar from "./AdminSidebar"
 import AdminNavbar from "./AdminNavbar"
 
@@ -6,27 +7,23 @@ type Props = {
 }
 
 function AdminLayout({ children }: Props) {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
+    <div className="pl-wrapper admin-wrapper">
+      <AdminSidebar 
+        mobileOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
-    <div className="dashboard-layout">
-
-      <AdminSidebar />
-
-      <div className="dashboard-main">
-
-        <AdminNavbar />
-
-        <div className="dashboard-content">
+      <div className="pl-main">
+        <AdminNavbar onMenuClick={() => setSidebarOpen(true)} />
+        <main className="pl-content">
           {children}
-        </div>
-
+        </main>
       </div>
-
     </div>
-
   )
-
 }
 
 export default AdminLayout

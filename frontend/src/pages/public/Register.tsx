@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
     FaPlusSquare, FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash,
-    FaPhone, FaVenusMars, FaArrowLeft, FaUserPlus, FaCheckCircle,
+    FaPhone, FaVenusMars, FaArrowLeft, FaUserPlus,
     FaCalendarAlt, FaHeartbeat, FaShieldAlt, FaClock
 } from 'react-icons/fa';
 
 const Register: React.FC = () => {
+    const navigate = useNavigate();
     const [showPass,    setShowPass]    = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const [agreed,      setAgreed]      = useState(false);
@@ -60,7 +61,7 @@ const Register: React.FC = () => {
                         <p>Join thousands of patients using MedicPulse — it's free!</p>
                     </div>
 
-                    <form className="sf-form" onSubmit={e => e.preventDefault()}>
+                    <form className="sf-form" onSubmit={e => { e.preventDefault(); navigate('/patient/dashboard'); }}>
 
                         {/* Full Name */}
                         <div className="sf-field">

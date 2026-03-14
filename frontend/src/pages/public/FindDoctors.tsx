@@ -4,7 +4,7 @@ import PublicNavbar from '../../components/layout/public/PublicNavbar';
 import PublicFooter from '../../components/layout/public/PublicFooter';
 import { 
     FaSearch, FaBriefcase, FaStar, FaMapMarkerAlt, 
-    FaClock, FaArrowRight, FaHandPointer
+    FaClock, FaArrowRight, FaHandPointer, FaUserCheck
 } from 'react-icons/fa';
 
 interface Doctor {
@@ -71,12 +71,6 @@ const FindDoctors: React.FC = () => {
         return () => document.removeEventListener('click', onDocClick);
     }, []);
 
-    // initials from name
-    const initials = (name: string) => {
-        const parts = name.split(' ').filter(Boolean);
-        return (parts[1]?.[0] ?? '') + (parts[2]?.[0] ?? '');
-    };
-
     const handleCardClick = (idx: number) => {
         if (window.innerWidth <= MOBILE_BP) {
             setFlipped(prev => (prev === idx ? null : idx));
@@ -140,8 +134,22 @@ const FindDoctors: React.FC = () => {
                                         <div className="flip-img">
                                             <img src={doc.image} alt={doc.name} />
                                             <div className="flip-spec-badge">{doc.specialization}</div>
+                                            
+                                            {/* Floating Stats */}
+                                            <div className="sc-floating-meta">
+                                                <div className="sc-chip experience">
+                                                    <FaBriefcase /> {doc.experience.split(' ')[0]}
+                                                </div>
+                                                <div className="sc-chip rating">
+                                                    <FaStar /> {doc.rating.split(' ')[0]}
+                                                </div>
+                                            </div>
+
                                             <div className="sc-img-overlay">
-                                                <h3 className="sc-name">{doc.name}</h3>
+                                                <div className="sc-name-row">
+                                                    <h3 className="sc-name">{doc.name}</h3>
+                                                    <FaUserCheck className="sc-verified" />
+                                                </div>
                                                 <p className="sc-spec">{doc.specialization}</p>
                                             </div>
                                         </div>
@@ -158,7 +166,6 @@ const FindDoctors: React.FC = () => {
                                     {/* Back */}
                                     <div className="flip-back">
                                         <div className="flip-back-content">
-                                            <div className="flip-avatar">{initials(doc.name)}</div>
                                             <h3 className="flip-back-name">{doc.name}</h3>
                                             <p className="flip-back-spec">{doc.specialization}</p>
                                             <ul className="flip-details">
@@ -172,7 +179,7 @@ const FindDoctors: React.FC = () => {
                                                 className="flip-book-btn"
                                                 onClick={e => e.stopPropagation()}
                                             >
-                                                Book Appointment <FaArrowRight />
+                                                Book Now <FaArrowRight />
                                             </Link>
                                         </div>
                                     </div>

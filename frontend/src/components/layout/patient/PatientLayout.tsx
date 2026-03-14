@@ -1,3 +1,4 @@
+import { useState } from "react"
 import PatientSidebar from "./PatientSidebar"
 import PatientNavbar from "./PatientNavbar"
 
@@ -6,27 +7,23 @@ type Props = {
 }
 
 function PatientLayout({ children }: Props) {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
+    <div className="pl-wrapper">
+      <PatientSidebar
+        mobileOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
-    <div className="dashboard-layout">
-
-      <PatientSidebar />
-
-      <div className="dashboard-main">
-
-        <PatientNavbar />
-
-        <div className="dashboard-content">
+      <div className="pl-main">
+        <PatientNavbar onMenuClick={() => setSidebarOpen(true)} />
+        <main className="pl-content">
           {children}
-        </div>
-
+        </main>
       </div>
-
     </div>
-
   )
-
 }
 
 export default PatientLayout
